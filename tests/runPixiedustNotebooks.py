@@ -39,11 +39,12 @@ if "compareratio" in os.environ:
         compareRatio = 0.98
 else:
     compareRatio = 0.98
-
-def createKernelSpecIfNeeded(kernelName, useSpark):
+ 
+def createKernelSpecIfNeeded(kernelName=__TEST_KERNEL_NAME__, useSpark=False):
     try:
         km = KernelManager(kernel_name=kernelName)
         km.kernel_spec
+        print("Kernal already exists!")
         return None
     except NoSuchKernel:
         print("Creating new Kernel {} target: {}".format(kernelName, useSpark) )
