@@ -35,24 +35,15 @@ class Instance():
         self.jupyterProc = None
         
         createKernelSpecIfNeeded()
-
         self.startJupyterNotebookInBackground()
         self.startDriverAndLoadJupyter()
-        self.loadNotebookIntoDriver(getNotebookPaths()[0])
-        self.selectTestKernel()
-        time.sleep(5) #using sleep until wait functions implemented
-        #self.waitForJupyterKernalToLoad()
-        self.runAllCells()
-        time.sleep(5) #using sleep until wait functions implemented
-        #self.waitForCellsToRun()
+
 
     def startJupyterNotebookInBackground(self):
         # the pid plus 1 is there because the shell, which is necessary, 
         # is the pid returned for the shell instance process,
         # but the child process (jupyter) is immediately created 
         # and that jupyter process pid is the shell process pid + 1
-        # P.S. make sure to understand nohup and & symbol if you aren't familiar with those
-        #+  "--MappingKernelManager.default_kernel_name=" + __TEST_KERNEL_NAME__
         JUPYTER_CMD = "jupyter notebook --no-browser  --notebook-dir=" + NOTEBOOKS_PATH + " > nohup.out 2>&1 &"
         self.jupyterProc = subprocess.Popen(JUPYTER_CMD, shell=True)
         self.pid = self.jupyterProc.pid + 1
@@ -68,14 +59,13 @@ class Instance():
     
     def getJupyterUrlFromNohup(self):
         try:
-            nohup = open("nohup.out", "r")
-            nohupTxt = nohup.read()
+            with open("nohup.out", "r") as nohup:
+                nohupTxt = nohup.read()
             self.parseOutTokenUrl(nohupTxt)
             self.parseOutBaseUrl()
         except IOError:
             print("Error: Problem opening nohup.out file.")
         finally:
-            nohup.close()
             os.system("rm nohup.out")
 
     def parseOutTokenUrl(self, nohup):
@@ -94,7 +84,13 @@ class Instance():
 
     def loadNotebookIntoDriver(self, nbPath):
         self.driver.get(self.baseUrl + nbPath)
-    
+        self.selectTestKernel()
+        time.sleep(5) #using sleep until wait functions implemented
+        #self.waitForJupyterKernalToLoad()
+        self.runAllCells()
+        time.sleep(5) #using sleep until wait functions implemented
+        #self.waitForCellsToRun()
+
     def selectTestKernel(self):
         try:
             WebDriverWait(self.driver, 5).until(
@@ -122,7 +118,7 @@ class Instance():
     
     def killJupyterNotebook(self):
         print("Killing jupyter server and shell...")
-        os.system('kill ' + str(self.pid - 1))
+        os.system('kill ' + str(self.pid))
         self.jupyterProc.kill()
 
 class NoKernelSetException(Exception):
@@ -147,26 +143,23 @@ class Cell():
 class Test(unittest.TestCase):
 
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls, nbName):
         try:
             cls.jsi = Instance() #jsi = jupyter selenium instance
-            cls.jn = Notebook() # jn = jupyter notebook
-            cls.selectNotebook()
+            cls.driver = cls.jsi.driver
+            cls.jnb = Notebook() # jn = jupyter notebook
+            cls.loadNotebook(nbName)
         except:
             cls.tearDownClass()
 
     @classmethod
     def tearDownClass(cls):
         cls.jsi.killJupyterNotebook()
-        cls.jsi.driver.close()
-        cls.jsi.driver.quit()
-        time.sleep(1)
+        cls.driver.close()
+        cls.driver.quit()
 
     @classmethod
-    def loadNotebook(cls):
-        None
-
-    @classmethod
-    def selectNotebook(cls):
-        moduleName = sys.modules[__name__]
+    def loadNotebook(cls, nbName):
+        nbPath =  "/notebooks/" + nbName
+        cls.jsi.loadNotebookIntoDriver(nbPath)
     
