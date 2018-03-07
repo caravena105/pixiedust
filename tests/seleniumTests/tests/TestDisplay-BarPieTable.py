@@ -1,16 +1,16 @@
-from ..JupyterSelenium import JupyterSelenium
+import sys, os
+import jupyterselenium
 import unittest 
 import selenium
 
-class BarPieTableTest(JupyterSelenium.Test):
 
+class BarPieTableTest(jupyterselenium.Test):
+    
     def testSomething(self):
-      print(self.jsi.driver)
-      self.jsi.driver.get_element_by_xpath("//*[@id=\"menus\"]/div/div/ul/li[1]")
-
-      self.jsi.driver.get_element_by_xpath(self.notebook.cell[0].xpath + "/ul")
-
       assert("hi" == "hi")
+
+    def testSomethingElse(self):
+        assert(self.jsi.driver != None)
       
 
 if __name__ == '__main__':
