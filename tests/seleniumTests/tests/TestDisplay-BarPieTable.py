@@ -3,19 +3,25 @@ import jupyterselenium
 import unittest 
 import selenium
 
-__NOTEBOOK_NAME__ = "TestDisplay-BarPieTable.ipynb"
+__NOTEBOOK_NAME__ = "TestDisplay-Filter.ipynb"
+__NOTEBOOK_FOLDER_PATH__ = "/Users/jacob.r.stafford@ibm.com/Desktop/pixiedust/tests"
 
-class BarPieTableTest(jupyterselenium.Test):
+class BarPieTableTest(jupyterselenium.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(BarPieTableTest, cls).setUpClass(__NOTEBOOK_NAME__)
-        
+        super(BarPieTableTest, cls).setUpClass(__NOTEBOOK_NAME__, __NOTEBOOK_FOLDER_PATH__)
+
     def testTesting(self):
         assert("hi" == "hi")
 
     def testDriverExists(self):
         assert(self.driver != None)
+        cell1Xpath = self.notebook.getNthCellOutputXpath(3)
+        print(cell1Xpath + "/btn/")
+
+    def testClickingOptions(self):
+        None
 
 if __name__ == '__main__':
     unittest.main()

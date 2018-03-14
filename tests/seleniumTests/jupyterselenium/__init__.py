@@ -1,4 +1,3 @@
-from jupyterselenium.jupyterselenium import Test
-from jupyterselenium.jupyterselenium import Instance
-from jupyterselenium.jupyterselenium import Cell
-from jupyterselenium.jupyterselenium import Notebook
+from jupyterselenium.testcase import TestCase
+from jupyterselenium.instance import Instance
+from jupyterselenium.notebook import Notebook
