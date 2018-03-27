@@ -19,6 +19,8 @@ NOTEBOOKS_PATH = "path"
 CELL_EXECUTION_WAIT_TIME = 30
 DRIVER_TYPE = 'chrome'
 KERNEL_NAME = __TEST_KERNEL_NAME__
+SPARK = True
+RUN_IN_BACKGROUND = True
 
 class Instance():
 
@@ -40,7 +42,7 @@ class Instance():
         self.nbFolderPath = nbFolderPath
         
         try:
-            createKernelSpecIfNeeded()
+            createKernelSpecIfNeeded(useSpark=SPARK)
             self.startJupyterNotebookInBackground()
             self.startDriverAndLoadJupyter()
         except Exception(): 
@@ -160,7 +162,6 @@ class Instance():
             numOfCodeCells = len(driver.find_elements_by_xpath("//*[@id='notebook-container']/div[contains(@class, 'code_cell')]"))
             numOfEmptyCodeCells = 0
             for cell_i in range(1, numOfCodeCells):
-                #//*[@id="notebook-container"]/div/div[1]/div[contains(text(),'*')]
                 xpathOfCellRunIndicator = "//*[@id='notebook-container']/div[{0}]/div[1]/div[1]".format(cell_i)
                 emptyCellIndicatorText = driver.find_element_by_xpath(xpathOfCellRunIndicator).text
                 if(emptyCellIndicatorText == "In [ ]:"):
@@ -169,7 +170,7 @@ class Instance():
 
         def __call__(self, driver):
             try:
-                #see if all outputs exist, thism eans all cells ran
+                #see if all outputs exist, this  means all cells ran
                 for i in range(1, self.numOfNonEmptyCodeCells):
                     xpathOfIthCellOutput = "//*[@id='notebook-container']/div[{0}]/div[2]/div[2]/div".format(i)
                     driver.find_element_by_xpath(xpathOfIthCellOutput)

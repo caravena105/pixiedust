@@ -17,7 +17,7 @@ class Notebook():
 
     def parseHtmlIntoCells(self, driver):
         for cellNum in range(1, self.getNumberOfCells(driver)):
-            xpath = "//*[@id=\"notebook-container\"]/div[{0}]/div[2]".format(cellNum)
+            xpath = "//*[@id=\"notebook-container\"]/div[{0}]*/div[2]".format(cellNum)
             driver.find_element_by_xpath(xpath)
             self.cells.append(Notebook.Cell(xpath, cellNum))
  
