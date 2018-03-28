@@ -10,7 +10,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 
-
 __NOTEBOOK_NAME__ = "TestDisplay-Filter.ipynb"
 __NOTEBOOK_FOLDER_PATH__ = "/Users/jacob.r.stafford@ibm.com/Desktop/pixiedust/tests"
 
@@ -22,15 +21,10 @@ class OptionsMenuTest(jupyterselenium.TestCase):
 
     def testChartTitleChange(self):
         assert(self.driver != None)
-        cell3Xpath = self.notebook.getNthCellOutputXpath(3)
-        pixiedustXpath = cell3Xpath + "//div[contains(@class,'pixiedust-output-wrapper')]"
-
-        xpathToOptionsBtn = pixiedustXpath + "//*[@pd_app='pixiedust.display.chart.renderers.table.tableOptions.TableOptions']"
-        WebDriverWait(self.driver, 3).until(
-            EC.presence_of_element_located((By.XPATH, xpathToOptionsBtn))
-        )  
-
-        optionsBtn = self.driver.find_element_by_xpath(xpathToOptionsBtn)
+        cell3 = self.notebook.getCell(3)
+        
+        optionsBtn = self.notebook.getElementInsideCell(cell3,
+             "//*[@pd_app='pixiedust.display.chart.renderers.table.tableOptions.TableOptions']", wait=True)
         optionsBtn.click()
 
         xpathToOptionsDialog = "//*[contains(@class,'modal-dialog')]"
@@ -52,12 +46,7 @@ class OptionsMenuTest(jupyterselenium.TestCase):
         okayBtn = self.driver.find_element_by_xpath(xpathToOkayBtn)
         okayBtn.click()
 
-        xpathToTitle = pixiedustXpath + "//div[@class='pd_save']"
-        WebDriverWait(self.driver, 3).until(
-            EC.text_to_be_present_in_element((By.XPATH, xpathToTitle), "Selenium changed the title!")
-        ) 
-        title = self.driver.find_element_by_xpath(xpathToTitle)
-
+        title = self.notebook.getElementInsideCell(cell3, "//div[@class='pd_save']", wait=True)
         self.assertEqual("Selenium changed the title!", title.text)
 
     def testRowNumberChange(self):
